@@ -1,46 +1,80 @@
-const createError = require('http-errors');
-const express = require('express');
-const path = require('path');
-const cookieParser = require('cookie-parser');
-const logger = require('morgan');
-const bodyParser = require('body-parser');
-
-const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/users');
+const express = require("express")
+const bodyparser = require("body-parser")
 
 const app = express();
-app.listen(3000, function () {
-  console.log("Started server on: "+3000);
+
+var dateFormat = require('dateformat');
+var now = new Date();
+
+var FirstRound="";
+var PayAdmissionFee="";
+var LastDateOfAdmission="";
+var EnrollmentNumberAndVerification="";
+var DeclearationOfExamSchedule="";
+var LastDateOfEnrollment="";
+
+app.set("view engine","ejs")
+
+app.use(bodyparser.urlencoded({extended : false}));
+
+
+
+app.get("/",function(req,res){
+
+   res.render("list",{first:FirstRound,trr:LastDateOfEnrollment,payadfee:PayAdmissionFee,lastdate:LastDateOfAdmission,enroll:EnrollmentNumberAndVerification,at2:DeclearationOfExamSchedule})
+
 });
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
+app.post("/",function(req,res){
 
-app.use(logger('dev'));
-app.use(express.json());
 
-// app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+   t0 = new Date(req.body.t0);
+   t0.setDate(t0.getDate() + 19);
+    var date1 = t0.toDateString();
+     LastDateOfEnrollment = dateFormat(date1,"dd/mm/yyyy");
 
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
+
+   t0 = new Date(req.body.t0);
+   t0.setDate(t0.getDate() + 9);
+
+    var date2 = t0.toDateString();
+    FirstRound= dateFormat(date2,"dd/mm/yyyy");
+
+    t0 = new Date(req.body.t0);
+   t0.setDate(t0.getDate() + 14)
+    var date3 = t0.toDateString();
+    PayAdmissionFee = dateFormat(date3,"dd/mm/yyyy");
+
+
+   t1 = new Date(req.body.t1);
+   t1.setDate(t1.getDate() + 9);
+    var date4 = t1.toDateString();
+    LastDateOfAdmission = dateFormat(date4,"dd/mm/yyyy");
+
+
+
+
+
+   t1 = new Date(req.body.t1);
+   t1.setDate(t1.getDate() + 14);
+    var date5 = t1.toDateString();
+    EnrollmentNumberAndVerification= dateFormat(date5,"dd/mm/yyyy");
+
+
+   t1 = new Date(req.body.t1);
+   t1.setDate(t1.getDate() + 24);
+    var date6 = t1.toDateString();
+    DeclearationOfExamSchedule = dateFormat(date6,"dd/mm/yyyy");
+    res.redirect("/");
+
+
+
 });
 
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+
+
+app.listen(8000,function(){
+
+    console.log("server is started on port no 8000")
 });
-
-module.exports = app;
